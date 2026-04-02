@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>To-Do List</title>
+</head>
+<body>
+
+    <h2>TO-DO LIST</h2>
+
+    <!-- Input + Add -->
+    <input type="text" id="taskInput" placeholder="Enter task">
+    <button id="addBtn">Add Task</button>
+
+    <!-- Task List -->
+    <ul id="tasks"> </ul>
+
+    <!-- Buttons -->
+    <button id="removeFirstBtn">Remove first task</button>
+    <button id="clearAllBtn">Clear all tasks</button>
+
+    <script>
+        // Add Task
+        document.getElementById("addBtn").addEventListener("click", () => {
+            let input = document.getElementById("taskInput");
+            let taskText = input.value;
+
+            if (taskText === "") {
+                alert("Enter a task!");
+                return;
+            }
+
+            let li = document.createElement("li");
+            li.textContent = taskText;
+          // Add delete button to each task
+            let deleteBtn = document.createElement("button");
+            deleteBtn.textContent = "Delete";
+
+            deleteBtn.onclick = () => li.remove();
+
+            li.appendChild(deleteBtn);
+
+            document.getElementById("tasks").appendChild(li);
+
+            input.value = "";
+        });
+
+        // Remove First Task
+        document.getElementById("removeFirstBtn").addEventListener("click", () => {
+            document.querySelector("#tasks li").remove();
+        });
+
+        // Clear All Tasks
+        document.getElementById("clearAllBtn").addEventListener("click", () => {
+            document.querySelectorAll("#tasks li").forEach(li => li.remove());
+        });
+
+    </script>
+
+</body>
+</html>

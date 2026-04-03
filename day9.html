@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Random Color Generator</title>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f2f2f2;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .container {
+      background: white;
+      padding: 25px;
+      border-radius: 12px;
+      text-align: center;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+    }
+
+    .boxes {
+      display: flex;
+      gap: 15px;
+      justify-content: center;
+      margin-bottom: 15px;
+    }
+
+    .box {
+      width: 60px;
+      height: 60px;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+
+    .red { background: red; }
+    .blue { background: blue; }
+    .green { background: green; }
+    .orange { background: orange; }
+
+  </style>
+</head>
+
+<body>
+
+  <div class="container">
+    <h1>Random Color Generator</h1>
+
+    <div class="boxes">
+    <div class="box red" onclick="changeColor('red')"></div>
+    <div class="box blue" onclick="changeColor('blue')"></div>
+    <div class="box green" onclick="changeColor('green')"></div>
+    <div class="box orange" onclick="changeColor('orange')"></div>
+    </div>
+
+    <p>Click a box to change the background!</p>
+  </div>
+
+  <script>
+    
+    function changeColor(color) {
+      document.body.style.backgroundColor = color;
+    }
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Discount Calculator</title>
+    <style>
+      body{
+        font-family: arial;
+        background-color: aqua;
+        align-items: center;
+        justify-content: center;
+        margin-top: 10%;
+      }
+      .container{
+        background: white;
+        width : 300px;
+        padding :20px;
+        border-radius: 10px;
+      }
+      h2{
+        margin-bottom: 20px;
+      }
+      button {
+        background-color: green;
+        color : white;
+        border : none;
+        padding : 10px;
+        border-radius: 5px;
+        cursor : pointer;
+      }
+        select,input {
+            width : 90%;
+            padding : 8px;
+            margin : 10px;
+        }
+        button:hover {
+            background-color: rgb(0, 20, 100);
+        }
+        p {
+            margin : 10px;
+        }
+     </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Product Discount Calculator</h2>
+        <label> Select Product:</label>
+        <br>
+        <select id = "product">
+            <option value="1000">Mouse</option>
+            <option value="2000">Keyboard</option>
+            <option value="50000">Laptop</option>
+        </select>
+        <br>
+        <label>Enter Discount (%):</label>
+        <br>
+        <input type="number" id="discount" placeholder="Enter discount percentage">
+        <br>
+        <button onclick = "calculate()">Get Final Price</button>
+
+        <p id="final"></p>
+    </div>
+    <script>
+        function calculate(){
+            let price = document.getElementById("product").value;
+            let discount = document.getElementById("discount").value;
+            price = Number(price);
+            discount = Number(discount);
+            if (price === 0 || discount === 0) {
+                document.getElementById("final").innerHTML = "Please select product and enter discount";
+                return;
+            }
+            let discountAmount = (price * discount )/ 100;
+            let finalPrice = price - discountAmount;
+            document.getElementById("final").innerHTML = "Original Price:" + price + "<br>Total Amount: " + finalPrice;
+        }
+
+
+    </script>
+</body>
+</html>

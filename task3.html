@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dice Roller</title>
+    <style>
+        body {
+            font-family: Arial,sans-serif;
+            display : flex;
+            justify-content: center;
+            align-items: center;
+            height : 100vh;
+            margin: 0;
+            background:#f0f0f0;
+            transition:background-color 0.3s;
+        }
+         .container {
+      text-align: center;
+      background: #fff;
+      padding: 40px;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      background-color: burlywood;
+    }
+    #dice {
+      width: 100px;
+      height: 100px;
+      background: #fff;
+      border: 3px solid #333;
+      border-radius: 12px;
+      margin: 20px auto;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 3rem;
+      font-weight: bold;
+    }
+    button {
+      padding: 12px 25px;
+      font-size: 1rem;
+      background: #333;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #555;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h2> 🎲Dice Roller Simulator 🎲</h2>
+    <div id="dice">🎲</div>
+    <button onclick="rollDice()">Roll Dice</button>
+  </div>
+
+  <script>
+   
+    function rollDice() {
+  // Dice symbols array
+  let diceSymbols = ["⚀", "⚁", "⚂", "⚃", "⚄", "⚅"];
+
+  // Generate random number (0–5 index)
+  let num = Math.floor(Math.random() * 6);
+
+  // Show dice symbol
+  document.getElementById("dice").innerText = diceSymbols[num];
+
+  // Change background to random color
+  let randomColor = '#' + Math.floor(Math.random()*16777215).toString(16).padStart(6, '0');
+  document.body.style.background = randomColor;
+}
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bank Loan EMI Calculator</title>
+    <style>
+      body{
+        font-family: arial;
+        display: flex;
+        background-color: aqua;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        margin : 0;
+       
+    background-image: url(https://www.kreditbee.in/blog/content/images/2024/02/shutterstock_1981611842-min.jpg);
+
+    background-size: cover;
+    background-repeat: no-repeat;
+      }
+      .container{
+        transparent;
+        width : 300px;
+        padding :20px;
+        border-radius: 10px;
+      }
+      h2{
+        margin-bottom: 20px;
+      }
+      button {
+        background-color: green;
+        color : white;
+        border : none;
+        padding : 10px;
+        border-radius: 5px;
+        cursor : pointer;
+      }
+        select,input {
+            width : 90%;
+            padding : 8px;
+            margin : 10px;
+        }
+        button:hover {
+            background-color: rgb(0, 20, 100);
+        }
+        p {
+            margin : 10px;
+            text-align: center;
+        }
+
+        </style>
+        </head>
+        <body>
+            <div class="container">
+                <h2>Bank Loan EMI Calculator</h2>
+                <label>Loan Amount(P): </label>
+                <input type="number" id="loanAmount" placeholder="Enter loan amount">
+                <label> AnnualInterest Rate(%):</label>
+                <input type="number" id="interestRate" placeholder="Enter annual interest rate">
+                <label>Tenure(months):</label>
+                <input type="number" id="loanTenure" placeholder="Enter loan tenure in months">
+                <button onclick="calculateEMI()">Calculate EMI</button>
+                <p id="result"></p>
+            </div>
+
+            <script>
+                function calculateEMI() {
+                    // Get input values
+                    let p = parseFloat(document.getElementById('loanAmount').value);
+                    let r = parseFloat(document.getElementById('interestRate').value);
+                    let n = parseFloat(document.getElementById('loanTenure').value);
+
+                    // Validate inputs
+                    if (isNaN(p) || isNaN(r) || isNaN(n) || p <= 0 || r <= 0 || n <= 0) {
+                        document.getElementById('result').innerHTML = 'Please enter valid positive numbers';
+                        return;
+                    }
+
+                    // Convert annual interest rate to monthly and decimal
+                    let monthlyRate = r / 12 / 100;
+
+                    // Calculate EMI using the formula: EMI = P * r * (1 + r)^n / ((1 + r)^n - 1)
+                    let emi = (p * monthlyRate * Math.pow(1 + monthlyRate, n)) / (Math.pow(1 + monthlyRate, n) - 1);
+                    
+                    // Display the result
+                    document.getElementById('result').innerHTML = 'Your EMI is: ₹' + emi.toFixed(2); // print two decimal
+                }
+            </script>
+        </body>

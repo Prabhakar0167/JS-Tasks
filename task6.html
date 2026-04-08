@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tally Counter</title>
+  <style>
+    body{
+      font-family: arial,sans-serif;
+      background-color: blueviolet;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin:0;
+    }
+
+    .container{
+      text-align: center;
+      padding: 40px;
+      border-radius: 15px;
+      background-color: bisque;
+      width: 450px;
+      height: 360px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .button-row {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+    }
+
+    .button-group {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+      margin-top: auto;
+      width: 100%;
+    }
+
+    .action-btn,
+    .reset-btn {
+      min-width: 190px;
+      padding: 16px 0;
+      border: none;
+      border-radius: 12px;
+      background-color: rgb(250, 250, 251);
+      color: rgb(0, 89, 9);
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+
+    .count-display {
+      font-size: 8rem;
+      font-weight: bold;
+      margin-top: 14px;
+      color: #832e39;
+    }
+
+    .reset-btn {
+      width: 400px;
+    }
+
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>TALLY COUNTER</h2>
+    <div id="countDisplay" class="count-display">0</div>
+    <div class="button-group">
+      <div class="button-row">
+        <button class="action-btn" onclick="decrease()"><b>- MINUS</b></button>
+        <button class="action-btn" onclick="increase()"><b>+ PLUS</b></button>
+      </div>
+      <button class="reset-btn" onclick="resetCounter()"><b>RESET</b></button>
+    </div>
+  </div>
+
+  <script>
+    const countDisplay = document.getElementById('countDisplay');
+    let count = 0;
+
+    function updateDisplay() {
+      countDisplay.textContent = count;
+    }
+
+    function decrease() {
+      count -= 1;
+      updateDisplay();
+    }
+
+    function increase() {
+      count += 1;
+      updateDisplay();
+    }
+
+    function resetCounter() {
+      count = 0;
+      updateDisplay();
+    }
+  </script>
+</body>
+</html>

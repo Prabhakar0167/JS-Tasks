@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Course Management Portal</title>
+    <style>
+        /* Modern Indigo/Slate Color Scheme */
+        :root {
+            --primary: #4f46e5;
+            --bg: #f8fafc;
+            --card: #ffffff;
+            --text: #1e293b;
+            --muted: #64748b;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            padding: 20px;
+            margin: 0;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: auto;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+        }
+
+        .card-panel {
+            background: var(--card);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        /* Decreased Label Size */
+        label {
+            font-size: 0.85rem;
+            color: var(--muted);
+            font-weight: 500;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 10px;
+        }
+
+        input, select {
+            padding: 10px;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: 0.9rem;
+        }
+
+        /* Controls */
+        .controls {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        /* Course Grid */
+        .course-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 15px;
+        }
+
+        .course-card {
+            background: var(--card);
+            padding: 18px;
+            border-radius: 10px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .highlight { background: #fef08a; }
+
+        .seat-badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 10px;
+            font-size: 0.9rem;
+        }
+
+        button:disabled { background: #cbd5e1; cursor: not-allowed; }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <h1>Course Portal</h1>
+
+        <div class="card-panel">
+            <form id="addCourseForm" class="form-grid">
+                <input type="text" id="nameIn" placeholder="Course Title" required>
+                <input type="text" id="deptIn" placeholder="Department" required>
+                <input type="number" id="seatsIn" placeholder="Total Seats" min="1" required>
+                <button type="submit" class="btn-primary">Add Course</button>
+            </form>
+        </div>
+
+        <div class="card-panel controls">
+            <input type="text" id="searchBar" placeholder="Search courses..." oninput="displayCourses()" style="flex-grow: 2;">
+            
+            <select id="filterDept" onchange="displayCourses()">
+                <option value="All">All Depts</option>
+            </select>
+
+            <select id="sortSeats" onchange="displayCourses()">
+                <option value="none">Sort: Default</option>
+                <option value="low">Seats: Low to High</option>
+                <option value="high">Seats: High to Low</option>
+            </select>
+
+            <label style="display: flex; align-items: center; gap: 5px; cursor: pointer;">
+                <input type="checkbox" id="checkAvailable" onchange="displayCourses()"> Available Only
+            </label>
+        </div>
+
+        <div id="courseList" class="course-grid"></div>
+    </div>
+
+    <script>
+        // Updated with 3 additional courses
+        let courses = JSON.parse(localStorage.getItem('portal_courses')) || [
+            { id: 101, name: "Data Structures", dept: "CS", seats: 12 },
+            { id: 102, name: "Digital Marketing", dept: "Business", seats: 0 },
+            { id: 103, name: "UI/UX Design", dept: "Design", seats: 5 },
+            { id: 104, name: "Introduction to Psychology", dept: "Arts", seats: 20 },
+            { id: 105, name: "Advanced Calculus", dept: "Math", seats: 8 },
+            { id: 106, name: "Web Development 101", dept: "CS", seats: 15 }
+        ];
+
+        const courseListEl = document.getElementById('courseList');
+        const deptSelect = document.getElementById('filterDept');
+
+        document.getElementById('addCourseForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            courses.push({
+                id: Date.now(),
+                name: document.getElementById('nameIn').value,
+                dept: document.getElementById('deptIn').value,
+                seats: parseInt(document.getElementById('seatsIn').value)
+            });
+            syncData();
+            e.target.reset();
+        });
+
+        function syncData() {
+            localStorage.setItem('portal_courses', JSON.stringify(courses));
+            refreshDeptList();
+            displayCourses();
+        }
+
+        function refreshDeptList() {
+            const currentDept = deptSelect.value;
+            const uniqueDepts = ['All', ...new Set(courses.map(c => c.dept))];
+            deptSelect.innerHTML = uniqueDepts.map(d => `<option value="${d}" ${d === currentDept ? 'selected' : ''}>${d}</option>`).join('');
+        }
+
+        function displayCourses() {
+            const search = document.getElementById('searchBar').value.toLowerCase();
+            const dept = deptSelect.value;
+            const sort = document.getElementById('sortSeats').value;
+            const onlyAvail = document.getElementById('checkAvailable').checked;
+
+            let filtered = courses.filter(c => {
+                const match = c.name.toLowerCase().includes(search);
+                const dMatch = (dept === "All" || c.dept === dept);
+                const aMatch = onlyAvail ? c.seats > 0 : true;
+                return match && dMatch && aMatch;
+            });
+
+            if (sort === 'low') filtered.sort((a, b) => a.seats - b.seats);
+            if (sort === 'high') filtered.sort((a, b) => b.seats - a.seats);
+
+            courseListEl.innerHTML = '';
+            filtered.forEach(course => {
+                const card = document.createElement('div');
+                card.className = 'course-card';
+                card.innerHTML = `
+                    <h3 style="margin-top:0">${course.name}</h3>
+                    <p style="font-size:0.9rem; margin: 5px 0;">Dept: ${course.dept}</p>
+                    <span class="seat-badge" style="background:${course.seats > 0 ? '#dcfce7' : '#fee2e2'}; color: ${course.seats > 0 ? '#166534' : '#991b1b'}">
+                        ${course.seats > 0 ? course.seats + ' Seats' : 'Full'}
+                    </span>
+                    <button class="btn-primary" onclick="enrollUser(${course.id})" ${course.seats === 0 ? 'disabled' : ''}>
+                        ${course.seats > 0 ? 'Enroll' : 'Full'}
+                    </button>
+                `;
+                courseListEl.appendChild(card);
+            });
+        }
+
+        function enrollUser(id) {
+            const index = courses.findIndex(c => c.id === id);
+            if (index !== -1 && courses[index].seats > 0) {
+                courses[index].seats--;
+                syncData();
+            }
+        }
+
+        refreshDeptList();
+        displayCourses();
+    </script>
+</body>
+</html>

@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Typing Test App</title>
+
+<style>
+body {
+  font-family: Arial;
+  background: #0f172a;
+  color: white;
+  text-align: center;
+  padding: 30px;
+}
+
+.container {
+  max-width: 600px;
+  margin: auto;
+}
+
+input, textarea {
+  width: 100%;
+  padding: 10px;
+  margin: 10px 0;
+  border-radius: 6px;
+  border: none;
+}
+
+button {
+  padding: 10px 20px;
+  border: none;
+  background: #3b82f6;
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.hidden {
+  display: none;
+}
+
+.result-box {
+  background: #1e293b;
+  padding: 15px;
+  margin-top: 20px;
+  border-radius: 10px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <!-- START PAGE -->
+  <div id="startPage">
+    <h2>Typing Test</h2>
+    <input type="text" id="name" placeholder="Enter Name">
+    <input type="email" id="email" placeholder="Enter Email">
+    <button onclick="startTest()">Start Exam</button>
+  </div>
+
+  <!-- TEST PAGE -->
+  <div id="testPage" class="hidden">
+    <h3>Time Left: <span id="timer">300</span> sec</h3>
+
+    <p id="textSample">
+      JavaScript is a powerful programming language used for web development.
+      Practice typing improves speed and accuracy over time.JavaScript is a versatile, high-level programming language primarily used to create interactive and dynamic content on websites. Originally developed by Brendan Eich in 1995, it has become one of the core technologies of the web alongside HTML and CSS. JavaScript allows developers to build features like animations, form validations, real-time updates, and complex web applications that run directly in the browser. Over time, with the rise of environments like Node.js, it has expanded beyond the browser to power server-side development as well. Its flexibility, large ecosystem of libraries and frameworks, and widespread support make JavaScript an essential tool for modern software development.
+    </p>
+
+    <textarea id="typingArea" rows="6" placeholder="Start typing here..."></textarea>
+
+    <button onclick="finishTest()">Finish</button>
+  </div>
+
+  <!-- RESULT PAGE -->
+  <div id="resultPage" class="hidden">
+    <h2>Result</h2>
+    <div class="result-box" id="resultBox"></div>
+  </div>
+
+</div>
+
+<script>
+let timer = 300;
+let interval;
+let startTime;
+
+function startTest() {
+  const name = document.getElementById('name').value;
+  const email = document.getElementById('email').value;
+
+  if (!name || !email) {
+    alert("Please enter name and email");
+    return;
+  }
+
+  localStorage.setItem('user', JSON.stringify({ name, email }));
+
+  document.getElementById('startPage').classList.add('hidden');
+  document.getElementById('testPage').classList.remove('hidden');
+
+  startTime = new Date();
+
+  interval = setInterval(() => {
+    timer--;
+    document.getElementById('timer').textContent = timer;
+
+    if (timer <= 0) {
+      finishTest();
+    }
+  }, 1000);
+}
+
+function finishTest() {
+  clearInterval(interval);
+
+  const text = document.getElementById('textSample').innerText;
+  const input = document.getElementById('typingArea').value;
+
+  const words = input.trim().split(/\s+/).length;
+  const spaces = (input.match(/ /g) || []).length;
+
+  // Mistakes calculation
+  let mistakes = 0;
+  for (let i = 0; i < input.length; i++) {
+    if (input[i] !== text[i]) mistakes++;
+  }
+
+  // Time in minutes
+  const timeTaken = (300 - timer) / 60;
+  const wpm = Math.round(words / timeTaken || 0);
+
+  const result = {
+    words,
+    spaces,
+    mistakes,
+    wpm,
+    time: new Date().toLocaleString()
+  };
+  // Save result to localStorage
+  localStorage.setItem('typing_result', JSON.stringify(result));
+
+  location.reload(); // reload page to show result
+}
+
+// Show result after reload
+window.onload = function() {
+  const result = JSON.parse(localStorage.getItem('typing_result'));
+
+  if (result) {
+    document.getElementById('startPage').classList.add('hidden');
+    document.getElementById('resultPage').classList.remove('hidden');
+
+    document.getElementById('resultBox').innerHTML = `
+      <p><strong>Words Typed:</strong> ${result.words}</p>
+      <p><strong>Spaces:</strong> ${result.spaces}</p>
+      <p><strong>Mistakes:</strong> ${result.mistakes}</p>
+      <p><strong>WPM:</strong> ${result.wpm}</p>
+      <p><strong>Date:</strong> ${result.time}</p>
+    `;
+
+    localStorage.removeItem('typing_result'); // clear after showing
+  }
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,538 @@
+Sure — here is a **single-file template** using your content on **Variables** and **Data Types** with **HTML, CSS, and JavaScript**.
+
+Save this as **`index.html`** and open it in your browser.
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Variables & Data Types Template</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      background: #f6f9ff;
+      color: #1e2a44;
+      line-height: 1.6;
+    }
+
+    :root {
+      --primary: #3b82f6;
+      --secondary: #7c3aed;
+      --dark: #14213d;
+      --light: #ffffff;
+      --gray: #6b7280;
+      --card: #ffffff;
+      --bg: #eef4ff;
+    }
+
+    /* Navbar */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 999;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 8%;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+    }
+
+    .logo {
+      font-size: 24px;
+      font-weight: bold;
+      color: var(--dark);
+    }
+
+    .logo span {
+      color: var(--primary);
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 18px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      color: var(--dark);
+      font-weight: 600;
+      transition: 0.3s;
+    }
+
+    .nav-links a:hover {
+      color: var(--primary);
+    }
+
+    .menu-btn {
+      display: none;
+      font-size: 28px;
+      cursor: pointer;
+      color: var(--dark);
+    }
+
+    /* Hero */
+    .hero {
+      min-height: 90vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 60px 8%;
+      background: linear-gradient(135deg, #2563eb, #7c3aed);
+      color: white;
+    }
+
+    .hero-content {
+      max-width: 900px;
+    }
+
+    .hero h1 {
+      font-size: 52px;
+      margin-bottom: 20px;
+    }
+
+    .hero p {
+      font-size: 19px;
+      margin-bottom: 30px;
+      line-height: 1.8;
+    }
+
+    .hero .btn {
+      display: inline-block;
+      padding: 14px 28px;
+      background: white;
+      color: var(--primary);
+      border-radius: 30px;
+      text-decoration: none;
+      font-weight: bold;
+      transition: 0.3s;
+    }
+
+    .hero .btn:hover {
+      background: #e5edff;
+      transform: translateY(-2px);
+    }
+
+    section {
+      padding: 70px 8%;
+    }
+
+    .section-title {
+      text-align: center;
+      font-size: 36px;
+      margin-bottom: 10px;
+      color: var(--dark);
+    }
+
+    .section-subtitle {
+      text-align: center;
+      max-width: 850px;
+      margin: 0 auto 40px;
+      color: var(--gray);
+      font-size: 17px;
+    }
+
+    /* Cards */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 22px;
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: 18px;
+      padding: 24px;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+      transition: 0.3s;
+      border-top: 5px solid var(--primary);
+    }
+
+    .card:hover {
+      transform: translateY(-8px);
+    }
+
+    .card h3 {
+      margin-bottom: 12px;
+      color: var(--dark);
+    }
+
+    .card p {
+      color: var(--gray);
+    }
+
+    /* Highlight section */
+    .highlight-box {
+      background: linear-gradient(135deg, #eff6ff, #f5f3ff);
+      border-radius: 22px;
+      padding: 35px;
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.06);
+    }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 25px;
+    }
+
+    .topic-list {
+      list-style: none;
+      margin-top: 10px;
+    }
+
+    .topic-list li {
+      padding: 10px 0;
+      border-bottom: 1px solid #dbe4ff;
+      color: var(--dark);
+      font-weight: 500;
+    }
+
+    .topic-list li:last-child {
+      border-bottom: none;
+    }
+
+    /* Demo Section */
+    .demo-box {
+      background: #111827;
+      color: #fff;
+      border-radius: 20px;
+      padding: 30px;
+      max-width: 950px;
+      margin: auto;
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.18);
+    }
+
+    .demo-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      justify-content: center;
+      margin-bottom: 25px;
+    }
+
+    .demo-buttons button {
+      padding: 11px 18px;
+      border: none;
+      border-radius: 24px;
+      background: linear-gradient(135deg, #3b82f6, #7c3aed);
+      color: white;
+      cursor: pointer;
+      font-weight: bold;
+      transition: 0.3s;
+    }
+
+    .demo-buttons button:hover {
+      transform: scale(1.05);
+    }
+
+    .output {
+      background: #1f2937;
+      padding: 22px;
+      border-radius: 14px;
+      min-height: 180px;
+    }
+
+    .output pre {
+      white-space: pre-wrap;
+      color: #93c5fd;
+      font-size: 16px;
+    }
+
+    .output p {
+      margin-top: 14px;
+      color: #e5e7eb;
+    }
+
+    /* Footer */
+    footer {
+      background: var(--dark);
+      color: white;
+      text-align: center;
+      padding: 20px;
+      margin-top: 30px;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .menu-btn {
+        display: block;
+      }
+
+      .nav-links {
+        display: none;
+        flex-direction: column;
+        position: absolute;
+        right: 8%;
+        top: 70px;
+        background: white;
+        padding: 20px;
+        border-radius: 14px;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.12);
+        width: 220px;
+      }
+
+      .nav-links.show {
+        display: flex;
+      }
+
+      .hero h1 {
+        font-size: 38px;
+      }
+
+      .hero p {
+        font-size: 17px;
+      }
+
+      .section-title {
+        font-size: 30px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav>
+    <div class="logo">Learn <span>JS Basics</span></div>
+    <div class="menu-btn" onclick="toggleMenu()">☰</div>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="#home">Home</a></li>
+      <li><a href="#variables">Variables</a></li>
+      <li><a href="#datatypes">Data Types</a></li>
+      <li><a href="#topics">Topics</a></li>
+      <li><a href="#demo">Demo</a></li>
+    </ul>
+  </nav>
+
+  <!-- Hero -->
+  <section class="hero" id="home">
+    <div class="hero-content">
+      <h1>Variables & Data Types</h1>
+      <p>
+        Learn the basics of JavaScript variables and data types in a simple and easy way.
+        Understand how data is stored, reused, and identified in programming.
+      </p>
+      <a href="#variables" class="btn">Start Learning</a>
+    </div>
+  </section>
+
+  <!-- Variables Section -->
+  <section id="variables">
+    <h2 class="section-title">Variables</h2>
+    <p class="section-subtitle">
+      A variable is used to store data. It is like a container or box where we keep values.
+      Every variable has a name and a value. We use variables to store and reuse data in programs.
+    </p>
+
+    <div class="grid">
+      <div class="card">
+        <h3>What is a Variable?</h3>
+        <p>A variable is a named container used to store data so it can be used later in a program.</p>
+      </div>
+
+      <div class="card">
+        <h3>Variable Declaration</h3>
+        <p>In JavaScript, variables can be declared using <b>var</b>, <b>let</b>, and <b>const</b>.</p>
+      </div>
+
+      <div class="card">
+        <h3>Rules for Naming Variables</h3>
+        <p>Variable names should start with a letter, underscore (_) or dollar sign ($), and should not use spaces.</p>
+      </div>
+
+      <div class="card">
+        <h3>Scope</h3>
+        <p>Scope tells where a variable can be accessed or used in the program.</p>
+      </div>
+
+      <div class="card">
+        <h3>Reassignment</h3>
+        <p>Reassignment means changing the value of a variable after it has been created.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Data Types Section -->
+  <section id="datatypes">
+    <h2 class="section-title">Data Types</h2>
+    <p class="section-subtitle">
+      A data type tells what kind of data a variable is storing.
+      It defines the type of value such as number, text, true/false, etc.
+    </p>
+
+    <div class="highlight-box">
+      <div class="two-col">
+        <div class="card">
+          <h3>1. Primitive Data Types</h3>
+          <p>Primitive data types are basic types in JavaScript.</p>
+          <ul class="topic-list">
+            <li>Number</li>
+            <li>String</li>
+            <li>Boolean</li>
+            <li>Undefined</li>
+            <li>Null</li>
+            <li>BigInt</li>
+            <li>Symbol</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <h3>2. Non-Primitive Data Types</h3>
+          <p>Non-primitive data types are more complex and can store collections of values.</p>
+          <ul class="topic-list">
+            <li>Object</li>
+            <li>Array</li>
+            <li>Function</li>
+            <li>Date</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Topics Covered -->
+  <section id="topics">
+    <h2 class="section-title">Overall Topics Covered Today</h2>
+    <p class="section-subtitle">
+      These are the important concepts covered in this lesson.
+    </p>
+
+    <div class="grid">
+      <div class="card">
+        <h3>Variables</h3>
+        <p>Variables store data and help us reuse values in programs.</p>
+      </div>
+
+      <div class="card">
+        <h3>Data Types</h3>
+        <p>Data types define what kind of value a variable stores.</p>
+      </div>
+
+      <div class="card">
+        <h3>Primitive Types</h3>
+        <p>Basic types such as number, string, boolean, null, and undefined.</p>
+      </div>
+
+      <div class="card">
+        <h3>Non-Primitive Types</h3>
+        <p>Complex types such as object, array, and function.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Interactive Demo -->
+  <section id="demo">
+    <h2 class="section-title">JavaScript Demo</h2>
+    <p class="section-subtitle">
+      Click the buttons below to see examples of variables and data types.
+    </p>
+
+    <div class="demo-box">
+      <div class="demo-buttons">
+        <button onclick="showDemo('var')">var</button>
+        <button onclick="showDemo('let')">let</button>
+        <button onclick="showDemo('const')">const</button>
+        <button onclick="showDemo('number')">Number</button>
+        <button onclick="showDemo('string')">String</button>
+        <button onclick="showDemo('boolean')">Boolean</button>
+        <button onclick="showDemo('object')">Object</button>
+        <button onclick="showDemo('array')">Array</button>
+      </div>
+
+      <div class="output">
+        <pre id="codeOutput">Click any button to see the code example...</pre>
+        <p id="infoOutput"></p>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <p>© 2026 Variables & Data Types Template | HTML, CSS & JavaScript</p>
+  </footer>
+
+  <script>
+    function toggleMenu() {
+      document.getElementById("navLinks").classList.toggle("show");
+    }
+
+    function showDemo(type) {
+      const codeOutput = document.getElementById("codeOutput");
+      const infoOutput = document.getElementById("infoOutput");
+
+      const demos = {
+        var: {
+          code: `var name = "Rahul";
+console.log(name);`,
+          info: "var is the old way to declare variables in JavaScript. It can be reassigned and has function scope."
+        },
+        let: {
+          code: `let age = 20;
+age = 21;
+console.log(age);`,
+          info: "let is used to declare variables that can be reassigned. It has block scope."
+        },
+        const: {
+          code: `const country = "India";
+console.log(country);`,
+          info: "const is used for variables whose value should not be changed after declaration."
+        },
+        number: {
+          code: `let marks = 95;
+console.log(typeof marks); // number`,
+          info: "Number data type stores numeric values like 10, 99, 45.5, etc."
+        },
+        string: {
+          code: `let studentName = "Amit";
+console.log(typeof studentName); // string`,
+          info: "String data type stores text values inside quotes."
+        },
+        boolean: {
+          code: `let isPassed = true;
+console.log(typeof isPassed); // boolean`,
+          info: "Boolean stores only two values: true or false."
+        },
+        object: {
+          code: `let student = {
+  name: "Riya",
+  age: 19
+};
+console.log(typeof student); // object`,
+          info: "Object is a non-primitive data type used to store data in key-value pairs."
+        },
+        array: {
+          code: `let colors = ["red", "blue", "green"];
+console.log(typeof colors); // object`,
+          info: "Array is a non-primitive type used to store multiple values in one variable."
+        }
+      };
+
+      codeOutput.textContent = demos[type].code;
+      infoOutput.textContent = demos[type].info;
+    }
+  </script>
+
+</body>
+</html>
+```
+
+If you want, I can also make this template in:
+- **more attractive modern UI**
+- **dark theme**
+- **student notes style**
+- **landing page with animations**
+- **presentation style for classroom use**

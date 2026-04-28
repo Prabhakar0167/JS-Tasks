@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Task Manager</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', Arial, sans-serif;
+      background: #0f172a;
+      min-height: 100vh;
+      padding: 24px;
+      color: #e2e8f0;
+    }
+
+    .container {
+      max-width: 920px;
+      margin: 0 auto;
+      background: #111827;
+      padding: 24px;
+      border-radius: 20px;
+      border: 1px solid rgba(255,255,255,.08);
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 24px;
+      color: #e2e8f0;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .date-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: .95rem;
+      color: #94a3b8;
+    }
+
+    .date-group label::before {
+      content: '📅 ';
+    }
+
+    input[type="date"],
+    .task-input,
+    .status-select {
+      width: 100%;
+      font: 400 14px/1.5 'Inter', Arial, sans-serif;
+      padding: 10px 14px;
+      border: 1px solid rgba(148,163,184,.25);
+      border-radius: 10px;
+      background: #111827;
+      color: #e2e8f0;
+      outline: none;
+      transition: border-color .2s, box-shadow .2s;
+    }
+
+    input[type="date"] {
+      cursor: pointer;
+      max-width: 220px;
+    }
+
+    input[type="date"]:hover,
+    .task-input:hover,
+    .status-select:hover {
+      border-color: rgba(99,102,241,.5);
+    }
+
+    input[type="date"]:focus,
+    .task-input:focus,
+    .status-select:focus {
+      border-color: #6366f1;
+      box-shadow: 0 0 0 4px rgba(99,102,241,.12);
+    }
+
+    .task-input::placeholder {
+      color: #64748b;
+    }
+
+    .status-select {
+      appearance: none;
+      -webkit-appearance: none;
+      font-weight: 600;
+    }
+
+    .btn {
+      border: none;
+      padding: 10px 20px;
+      border-radius: 12px;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 14px;
+      transition: transform .2s ease;
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+    }
+
+    .btn-add {
+      background: #6366f1;
+      color: #fff;
+    }
+
+    .btn-save {
+      background: #10b981;
+      color: #fff;
+    }
+
+    .btn-remove {
+      background: transparent;
+      color: #f87171;
+      border: 1px solid rgba(248,113,113,.4);
+      padding: 8px 14px;
+      font-size: 13px;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .table-wrapper {
+      overflow: hidden;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,.08);
+      background: #111827;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    thead {
+      background: rgba(99,102,241,.12);
+    }
+
+    th,
+    td {
+      padding: 14px 16px;
+      text-align: left;
+    }
+
+    th {
+      color: #c7d2fe;
+      font-weight: 700;
+      font-size: .8rem;
+      text-transform: uppercase;
+      letter-spacing: .8px;
+      border-bottom: 1px solid rgba(148,163,184,.18);
+    }
+
+    td {
+      color: #e2e8f0;
+      border-bottom: 1px solid rgba(255,255,255,.05);
+    }
+
+    tbody tr:hover td {
+      background: rgba(99,102,241,.04);
+    }
+
+    td.serial-cell {
+      color: #818cf8;
+      font-weight: 700;
+      width: 80px;
+    }
+
+    .status-cell {
+      min-width: 140px;
+    }
+
+    .footer-actions {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-top: 24px;
+    }
+
+    .status {
+      font-size: 13px;
+      color: #94a3b8;
+      padding: 10px 16px;
+      background: #111827;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,.08);
+    }
+
+    .status strong {
+      color: #a78bfa;
+    }
+
+    .stats-row {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .stat-card {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 16px;
+      background: #0f172a;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,.08);
+    }
+
+    .stat-value {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #f8fafc;
+    }
+
+    .stat-label {
+      font-size: .7rem;
+      color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: .6px;
+    }
+
+    .stat-card.done .stat-value {
+      color: #34d399;
+    }
+
+    .stat-card.pending .stat-value {
+      color: #fbbf24;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: #94a3b8;
+      font-size: .95rem;
+    }
+
+    .empty-icon {
+      font-size: 2.5rem;
+      display: block;
+      margin-bottom: 12px;
+      opacity: .5;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(120px);
+      padding: 12px 24px;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 700;
+      opacity: 0;
+      transition: transform .3s ease, opacity .3s ease;
+      z-index: 1000;
+      pointer-events: none;
+      white-space: nowrap;
+    }
+
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+
+    .toast.success {
+      background: rgba(16,185,129,.95);
+      color: #fff;
+    }
+
+    .toast.info {
+      background: rgba(99,102,241,.95);
+      color: #fff;
+    }
+
+    .toast.warning {
+      background: rgba(245,158,11,.95);
+      color: #fff;
+    }
+
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Task Manager</h1>
+
+    <div class="topbar">
+      <div class="date-group">
+        <label for="taskDate">Select Date:</label>
+        <input type="date" id="taskDate" />
+      </div>
+      <div class="actions">
+        <button class="btn btn-add" id="addRowBtn">＋ Add Task</button>
+        <button class="btn btn-save" id="saveBtn">💾 Save</button>
+      </div>
+    </div>
+
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th style="width:80px">SL.No</th>
+            <th>Task</th>
+            <th style="width:180px">Status</th>
+            <th style="width:100px">Action</th>
+          </tr>
+        </thead>
+        <tbody id="taskTableBody"></tbody>
+      </table>
+    </div>
+
+    <div class="footer-actions">
+      <div class="stats-row">
+        <div class="stat-card total">
+          <span>📌</span>
+          <div><span class="stat-value" id="totalCount">0</span><br><span class="stat-label">Total</span></div>
+        </div>
+        <div class="stat-card done">
+          <span>✅</span>
+          <div><span class="stat-value" id="doneCount">0</span><br><span class="stat-label">Done</span></div>
+        </div>
+        <div class="stat-card pending">
+          <span>⏳</span>
+          <div><span class="stat-value" id="pendingCount">0</span><br><span class="stat-label">Pending</span></div>
+        </div>
+      </div>
+      <div class="status" id="statusText">No data loaded yet.</div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const $ = id => document.getElementById(id);
+    const tbody = $("taskTableBody");
+    const STORAGE_KEY = "taskManagerData";
+
+    function today() {
+      return new Date().toISOString().split("T")[0];
+    }
+
+    function loadData() {
+      return JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
+    }
+
+    function saveData(data) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    }
+
+    function showToast(message, type = "info") {
+      const toast = $("toast");
+      toast.textContent = message;
+      toast.className = `toast ${type} show`;
+      setTimeout(() => toast.classList.remove("show"), 2500);
+    }
+
+    function updateStats() {
+      const rows = Array.from(tbody.querySelectorAll("tr:not(.empty-state)"));
+      const done = rows.filter(row => row.querySelector(".status-select").value === "Completed").length;
+      $("totalCount").textContent = rows.length;
+      $("doneCount").textContent = done;
+      $("pendingCount").textContent = rows.length - done;
+    }
+
+    function showEmpty() {
+      tbody.innerHTML = `
+        <tr class="empty-state">
+          <td colspan="4">
+            <span class="empty-icon">📋</span>
+            No tasks yet. Click <strong>"＋ Add Task"</strong> to begin!
+          </td>
+        </tr>`;
+      updateStats();
+    }
+
+    function updateNumbers() {
+      tbody.querySelectorAll("tr:not(.empty-state)").forEach((row, index) => {
+        row.querySelector(".serial").textContent = index + 1;
+      });
+      updateStats();
+    }
+
+    function addRow(taskText = "", status = "Not") {
+      const row = document.createElement("tr");
+      row.innerHTML = `
+        <td class="serial-cell serial"></td>
+        <td class="task-cell">
+          <input type="text" class="task-input" placeholder="Enter your task here…" value="${taskText.replace(/"/g, "&quot;")}" />
+        </td>
+        <td class="status-cell">
+          <select class="status-select">
+            <option value="Completed"${status === "Completed" ? " selected" : ""}>✅ Completed</option>
+            <option value="Not"${status === "Not" ? " selected" : ""}>⏳ Pending</option>
+          </select>
+        </td>
+        <td><button class="btn btn-remove">✕ Delete</button></td>`;
+
+      const select = row.querySelector(".status-select");
+      const input = row.querySelector(".task-input");
+
+      select.addEventListener("change", () => {
+        const done = select.value === "Completed";
+        input.style.textDecoration = done ? "line-through" : "none";
+        input.style.color = done ? "#64748b" : "#e2e8f0";
+        updateStats();
+      });
+
+      row.querySelector(".btn-remove").addEventListener("click", () => {
+        row.remove();
+        if (!tbody.querySelector("tr:not(.empty-state)")) showEmpty();
+        updateNumbers();
+        showToast("Task deleted!", "warning");
+      });
+
+      if (tbody.querySelector(".empty-state")) tbody.innerHTML = "";
+      tbody.appendChild(row);
+      updateNumbers();
+    }
+
+    function loadTasks(date) {
+      const data = loadData();
+      const tasks = data[date] || [];
+      tbody.innerHTML = "";
+
+      if (!tasks.length) {
+        showEmpty();
+        $("statusText").innerHTML = `No saved tasks for <strong>${date}</strong>. Start adding tasks.`;
+      } else {
+        tasks.forEach(task => addRow(task.task, task.status));
+        $("statusText").innerHTML = `Loaded <strong>${tasks.length}</strong> task(s) for <strong>${date}</strong>.`;
+      }
+    }
+
+    function saveTasks(date) {
+      const rows = Array.from(tbody.querySelectorAll("tr:not(.empty-state)"));
+      const tasks = rows.map(row => ({
+        task: row.querySelector(".task-input").value.trim(),
+        status: row.querySelector(".status-select").value
+      })).filter(item => item.task);
+
+      const data = loadData();
+      data[date] = tasks;
+      saveData(data);
+      $("statusText").innerHTML = `💾 Saved <strong>${tasks.length}</strong> task(s) for <strong>${date}</strong>.`;
+      showToast(`Saved ${tasks.length} task(s)!`, "success");
+    }
+
+    $("addRowBtn").addEventListener("click", () => {
+      addRow();
+      showToast("New task added!", "info");
+    });
+
+    $("saveBtn").addEventListener("click", () => {
+      const date = $("taskDate").value;
+      if (!date) {
+        showToast("Please select a date first!", "warning");
+        return;
+      }
+      saveTasks(date);
+    });
+
+    $("taskDate").addEventListener("change", e => {
+      if (e.target.value) loadTasks(e.target.value);
+    });
+
+    $("taskDate").value = today();
+    loadTasks($("taskDate").value);
+  </script>
+</body>
+</html>

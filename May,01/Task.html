@@ -1,0 +1,995 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Quiz Application</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      :root {
+        --bg1: #0f172a;
+        --bg2: #1d1b4b;
+        --bg3: #312e81;
+        --card: rgba(15, 23, 42, 0.72);
+        --panel: rgba(255, 255, 255, 0.06);
+        --border: rgba(255, 255, 255, 0.12);
+        --text: #eef2ff;
+        --muted: #b9c3da;
+        --primary: #7c3aed;
+        --primary2: #2563eb;
+        --good: #22c55e;
+        --bad: #ef4444;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        padding: 16px;
+        display: grid;
+        place-items: center;
+        font-family:
+          system-ui,
+          -apple-system,
+          Segoe UI,
+          sans-serif;
+        color: var(--text);
+        background: linear-gradient(
+          135deg,
+          var(--bg1),
+          var(--bg2) 45%,
+          var(--bg3)
+        );
+        overflow-x: hidden;
+      }
+
+      body::before,
+      body::after {
+        content: "";
+        position: fixed;
+        width: 260px;
+        height: 260px;
+        border-radius: 50%;
+        filter: blur(50px);
+        opacity: 0.3;
+        pointer-events: none;
+        z-index: 0;
+      }
+      body::before {
+        top: -90px;
+        left: -90px;
+        background: rgba(255, 255, 255, 0.1);
+      }
+      body::after {
+        right: -90px;
+        bottom: -90px;
+        background: rgba(124, 58, 237, 0.22);
+      }
+
+      .app {
+        width: min(1050px, 100%);
+        position: relative;
+        z-index: 1;
+        padding: 24px;
+        border-radius: 24px;
+        background: var(--card);
+        border: 1px solid var(--border);
+        backdrop-filter: blur(16px);
+        box-shadow: 0 28px 70px rgba(0, 0, 0, 0.35);
+      }
+
+      .screen {
+        display: none;
+      }
+      .screen.active {
+        display: block;
+        animation: in 0.3s ease;
+      }
+      @keyframes in {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+
+      .tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 7px 12px;
+        border-radius: 999px;
+        font-size: 12px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--muted);
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid var(--border);
+      }
+
+      h1,
+      h2,
+      h3,
+      p {
+        margin: 0;
+      }
+
+      .hero {
+        margin-bottom: 20px;
+      }
+      .hero h1 {
+        font-size: clamp(2rem, 4vw, 3.3rem);
+        line-height: 1.05;
+        letter-spacing: -0.04em;
+        margin: 12px 0;
+      }
+      .hero p {
+        max-width: 70ch;
+        color: var(--muted);
+        line-height: 1.65;
+      }
+
+      .pills {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-top: 16px;
+      }
+      .pill {
+        padding: 8px 12px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid var(--border);
+        color: var(--muted);
+        font-size: 13px;
+        font-weight: 600;
+      }
+
+      .set-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 14px;
+        margin-top: 18px;
+      }
+      .set {
+        border: 1px solid var(--border);
+        background: rgba(255, 255, 255, 0.05);
+        color: var(--text);
+        border-radius: 18px;
+        padding: 18px;
+        min-height: 160px;
+        text-align: left;
+        cursor: pointer;
+        display: grid;
+        gap: 8px;
+        align-content: start;
+        transition: 0.2s ease;
+      }
+      .set:hover {
+        transform: translateY(-3px);
+        border-color: rgba(148, 163, 184, 0.6);
+        box-shadow: 0 16px 28px rgba(15, 23, 42, 0.08);
+      }
+      .set b {
+        font-size: 1.05rem;
+      }
+      .set small {
+        color: var(--muted);
+        line-height: 1.5;
+      }
+      .meta-badge {
+        width: fit-content;
+        padding: 6px 10px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.06);
+        color: #d8ddf0;
+        font-size: 12px;
+        font-weight: 700;
+      }
+
+      .top {
+        display: flex;
+        justify-content: space-between;
+        gap: 14px;
+        align-items: center;
+        flex-wrap: wrap;
+        margin-bottom: 16px;
+      }
+      .top h2 {
+        margin-top: 8px;
+        font-size: clamp(1.35rem, 2.5vw, 1.9rem);
+      }
+
+      .btn {
+        border: none;
+        cursor: pointer;
+        font: inherit;
+        font-weight: 800;
+        padding: 12px 18px;
+        border-radius: 14px;
+        color: white;
+        background: linear-gradient(135deg, var(--primary), var(--primary2));
+        transition: 0.2s ease;
+      }
+      .btn:hover {
+        transform: translateY(-2px);
+        filter: brightness(1.05);
+        box-shadow: 0 14px 24px rgba(0, 0, 0, 0.18);
+      }
+      .btn.ghost {
+        background: rgba(255, 255, 255, 0.08);
+        color: var(--text);
+        border: 1px solid var(--border);
+        box-shadow: none;
+      }
+
+      .progress-row {
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+        flex-wrap: wrap;
+        color: var(--muted);
+        font-size: 13px;
+        font-weight: 600;
+        margin-bottom: 10px;
+      }
+      .bar {
+        height: 14px;
+        border-radius: 999px;
+        overflow: hidden;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+      }
+      .fill {
+        height: 100%;
+        width: 0%;
+        background: linear-gradient(90deg, var(--primary), var(--primary2));
+        transition: width 0.35s ease;
+      }
+
+      .card {
+        margin-top: 16px;
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        padding: 20px;
+      }
+      .qno {
+        width: fit-content;
+        margin-bottom: 10px;
+        padding: 6px 10px;
+        border-radius: 10px;
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid var(--border);
+        color: #d8ddf0;
+        font-size: 13px;
+        font-weight: 700;
+      }
+      .card h3 {
+        font-size: clamp(1.2rem, 2vw, 1.55rem);
+        line-height: 1.5;
+        margin-bottom: 16px;
+      }
+
+      .options {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+      }
+      .opt {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        text-align: left;
+        border: 1px solid var(--border);
+        background: rgba(255, 255, 255, 0.05);
+        color: var(--text);
+        border-radius: 16px;
+        padding: 14px;
+        min-height: 60px;
+        cursor: pointer;
+        transition: 0.18s ease;
+      }
+      .opt:hover {
+        transform: translateY(-2px);
+        border-color: rgba(255, 255, 255, 0.22);
+        box-shadow: 0 12px 20px rgba(0, 0, 0, 0.14);
+      }
+      .opt:disabled {
+        cursor: default;
+        opacity: 0.98;
+      }
+      .opt b {
+        width: 34px;
+        height: 34px;
+        border-radius: 10px;
+        display: grid;
+        place-items: center;
+        flex: 0 0 auto;
+        background: linear-gradient(
+          135deg,
+          rgba(124, 58, 237, 0.9),
+          rgba(37, 99, 235, 0.9)
+        );
+        color: #fff;
+      }
+      .opt.right {
+        background: rgba(34, 197, 94, 0.15);
+        border-color: rgba(34, 197, 94, 0.55);
+      }
+      .opt.wrong {
+        background: rgba(239, 68, 68, 0.15);
+        border-color: rgba(239, 68, 68, 0.55);
+      }
+
+      .feedback {
+        min-height: 26px;
+        margin-top: 14px;
+        font-weight: 700;
+        color: var(--muted);
+      }
+      .feedback.good {
+        color: #86efac;
+      }
+      .feedback.bad {
+        color: #fda4af;
+      }
+
+      .actions {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-top: 16px;
+      }
+
+      .result-layout {
+        display: grid;
+        grid-template-columns: 0.9fr 1.1fr;
+        gap: 16px;
+      }
+      .result-box,
+      .review-box {
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        padding: 20px;
+      }
+      .score {
+        width: 140px;
+        height: 140px;
+        border-radius: 50%;
+        display: grid;
+        place-items: center;
+        text-align: center;
+        background: linear-gradient(
+          135deg,
+          rgba(124, 58, 237, 0.18),
+          rgba(37, 99, 235, 0.18)
+        );
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+        margin-bottom: 14px;
+      }
+      .score strong {
+        font-size: 2.6rem;
+        line-height: 1;
+      }
+      .score small {
+        display: block;
+        margin-top: 4px;
+        color: var(--muted);
+        font-weight: 700;
+      }
+
+      .stats {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+        margin: 16px 0;
+      }
+      .stat {
+        padding: 14px;
+        border-radius: 16px;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid var(--border);
+        min-height: 86px;
+        display: grid;
+        align-content: space-between;
+      }
+      .stat span {
+        color: var(--muted);
+        font-size: 13px;
+        font-weight: 600;
+      }
+      .stat strong {
+        font-size: 1.2rem;
+      }
+
+      .review-list {
+        display: grid;
+        gap: 12px;
+        max-height: 62vh;
+        overflow: auto;
+        padding-right: 6px;
+      }
+      .review {
+        padding: 14px;
+        border-radius: 16px;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid var(--border);
+        display: grid;
+        gap: 8px;
+      }
+      .review.good {
+        border-color: rgba(34, 197, 94, 0.3);
+      }
+      .review.bad {
+        border-color: rgba(239, 68, 68, 0.3);
+      }
+      .review .head {
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+      .review .q {
+        font-weight: 700;
+        line-height: 1.5;
+      }
+      .badge {
+        padding: 6px 10px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 800;
+        white-space: nowrap;
+      }
+      .badge.good {
+        background: rgba(34, 197, 94, 0.14);
+        color: #86efac;
+      }
+      .badge.bad {
+        background: rgba(239, 68, 68, 0.14);
+        color: #fca5a5;
+      }
+      .answer {
+        font-size: 13px;
+        line-height: 1.55;
+      }
+      .answer span {
+        color: var(--muted);
+        display: block;
+      }
+      .answer b.good {
+        color: #86efac;
+      }
+      .answer b.bad {
+        color: #fca5a5;
+      }
+
+      .empty {
+        padding: 14px;
+        border-radius: 14px;
+        text-align: center;
+        color: var(--muted);
+        border: 1px dashed var(--border);
+        background: rgba(255, 255, 255, 0.04);
+      }
+    </style>
+  </head>
+  <body>
+    <main class="app">
+      <!-- Start Screen -->
+      <section id="start" class="screen active">
+        <div class="hero">
+          <span class="tag">Interactive Frontend Quiz</span>
+          <h1>Select Quiz Set</h1>
+          <p>
+            Pick a topic and answer 10 multiple-choice questions one by one.
+            You’ll get a progress bar, instant feedback, and a final score
+            summary.
+          </p>
+          <div class="pills">
+            <span class="pill">3 Sets</span>
+            <span class="pill">30 MCQs</span>
+            <span class="pill">4 Options</span>
+          </div>
+        </div>
+
+        <div class="set-grid">
+          <button class="set" data-set="html" type="button">
+            <b>HTML Quiz</b>
+            <small>Tags, structure, and semantic elements.</small>
+            <span class="meta-badge">10 MCQs</span>
+          </button>
+
+          <button class="set" data-set="css" type="button">
+            <b>CSS Quiz</b>
+            <small>Styling, layout, spacing, and selectors.</small>
+            <span class="meta-badge">10 MCQs</span>
+          </button>
+
+          <button class="set" data-set="js" type="button">
+            <b>JavaScript Quiz</b>
+            <small>Variables, loops, DOM, and core logic.</small>
+            <span class="meta-badge">10 MCQs</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- Quiz Screen -->
+      <section id="quiz" class="screen">
+        <div class="top">
+          <div>
+            <span class="tag" id="setTitle">HTML Quiz</span>
+            <h2 id="qCount">Question 1 of 10</h2>
+            <p style="color: var(--muted); margin-top: 6px">
+              Select one answer to continue.
+            </p>
+          </div>
+          <button class="btn ghost" id="restartBtn" type="button">
+            Restart Set
+          </button>
+        </div>
+
+        <div class="progress-row">
+          <span id="metaLeft">Question 1 of 10</span>
+          <span id="pct">10% complete</span>
+        </div>
+        <div class="bar"><div class="fill" id="fill"></div></div>
+
+        <div class="card">
+          <div class="qno" id="qNo">Q01</div>
+          <h3 id="qText">Question text</h3>
+          <div class="options" id="options"></div>
+          <div class="feedback" id="feedback">Choose one answer.</div>
+
+          <div class="actions">
+            <button class="btn ghost" id="chooseBtn" type="button">
+              Choose Set
+            </button>
+            <button class="btn" id="nextBtn" type="button" disabled>
+              Next
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Result Screen -->
+      <section id="result" class="screen">
+        <div class="result-layout">
+          <div class="result-box">
+            <span class="tag">Quiz Completed</span>
+            <div
+              style="
+                display: flex;
+                gap: 16px;
+                align-items: center;
+                flex-wrap: wrap;
+                margin-top: 14px;
+              "
+            >
+              <div class="score">
+                <div>
+                  <strong id="scoreValue">0</strong>
+                  <small id="scoreTotal">/ 10</small>
+                </div>
+              </div>
+              <div>
+                <h2 id="resultTitle">Nice Try!</h2>
+                <p id="resultMsg" style="color: var(--muted); margin-top: 8px">
+                  You completed the quiz.
+                </p>
+              </div>
+            </div>
+
+            <div class="stats">
+              <div class="stat">
+                <span>Correct</span><strong id="correctCount">0</strong>
+              </div>
+              <div class="stat">
+                <span>Wrong</span><strong id="wrongCount">0</strong>
+              </div>
+              <div class="stat">
+                <span>Accuracy</span><strong id="accuracyCount">0%</strong>
+              </div>
+            </div>
+
+            <div class="actions">
+              <button class="btn" id="playAgainBtn" type="button">
+                Play Again
+              </button>
+              <button class="btn ghost" id="chooseSetBtn" type="button">
+                Choose Another Set
+              </button>
+            </div>
+          </div>
+
+          <div class="review-box">
+            <h3>Review Answers</h3>
+            <p style="color: var(--muted); margin: 8px 0 14px">
+              Correct answers are shown below.
+            </p>
+            <div class="review-list" id="reviewList"></div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script>
+      // Default questions for all 3 sets
+      const QUIZ = {
+        html: {
+          title: "HTML Quiz",
+          q: [
+            [
+              "What does HTML stand for?",
+              [
+                "HyperText Markup Language",
+                "HighText Machine Language",
+                "Hyperlink Text Markup Language",
+                "Home Tool Markup Language",
+              ],
+              0,
+            ],
+            [
+              "Which tag is the largest heading?",
+              ["h2", "h1", "h6", "title"],
+              1,
+            ],
+            [
+              "Which attribute specifies a link destination?",
+              ["target", "href", "src", "alt"],
+              1,
+            ],
+            [
+              "Which tag inserts an image?",
+              ["picture", "img", "src", "image"],
+              1,
+            ],
+            [
+              "Which tag creates an unordered list?",
+              ["ol", "ul", "li", "list"],
+              1,
+            ],
+            ["Which tag creates a line break?", ["hr", "br", "break", "lb"], 1],
+            ["Which tag defines a table row?", ["td", "tr", "th", "table"], 1],
+            [
+              "Which semantic element contains navigation links?",
+              ["section", "article", "nav", "aside"],
+              2,
+            ],
+            [
+              "Which tag creates a form?",
+              ["input", "label", "form", "fieldset"],
+              2,
+            ],
+            ["Which tag emphasizes text?", ["strong", "em", "b", "i"], 1],
+          ],
+        },
+        css: {
+          title: "CSS Quiz",
+          q: [
+            [
+              "What does CSS stand for?",
+              [
+                "CSS Style Sheets",
+                "Cascading Style Sheets",
+                "Creative Style System",
+                "Color Style Sheets",
+              ],
+              1,
+            ],
+            [
+              "Which property changes text color?",
+              ["background-color", "color", "font-color", "text-color"],
+              1,
+            ],
+            [
+              "Which property controls space outside an element?",
+              ["padding", "margin", "spacing", "gap"],
+              1,
+            ],
+            [
+              "Which property controls space inside an element?",
+              ["padding", "border", "gap", "margin"],
+              0,
+            ],
+            [
+              "Which display value creates a flex container?",
+              ["block", "flex", "grid", "inline"],
+              1,
+            ],
+            [
+              "Which unit is relative to viewport width?",
+              ["em", "vw", "rem", "px"],
+              1,
+            ],
+            [
+              "Which property makes text bold?",
+              ["bold", "font-weight", "font-style", "text-decoration"],
+              1,
+            ],
+            [
+              "Which property adds shadow to elements?",
+              ["text-shadow", "box-shadow", "shadow-effect", "element-shadow"],
+              1,
+            ],
+            [
+              "Which pseudo-class is used on hover?",
+              [":focus", ":active", ":hover", ":visited"],
+              2,
+            ],
+            [
+              "Which property gives rounded corners?",
+              ["border-radius", "corner-radius", "radius", "round-border"],
+              0,
+            ],
+          ],
+        },
+        js: {
+          title: "JavaScript Quiz",
+          q: [
+            [
+              "Which keyword declares a variable that can be reassigned?",
+              ["const", "var", "let", "static"],
+              2,
+            ],
+            [
+              "Which array method adds an item to the end?",
+              ["shift()", "push()", "pop()", "unshift()"],
+              1,
+            ],
+            [
+              "Which method converts JSON string to object?",
+              [
+                "JSON.stringify()",
+                "JSON.parse()",
+                "Object.parse()",
+                "parseJSON()",
+              ],
+              1,
+            ],
+            [
+              "Which keyword declares a constant?",
+              ["const", "let", "var", "fixed"],
+              0,
+            ],
+            [
+              "What is the result of typeof null?",
+              ["undefined", "object", "null", "number"],
+              1,
+            ],
+            [
+              "Which operator compares both value and type?",
+              ["==", "===", "=", "!=="],
+              1,
+            ],
+            [
+              "Which function converts a string to an integer?",
+              ["parseFloat()", "parseInt()", "toInt()", "int()"],
+              1,
+            ],
+            [
+              "Which loop keeps running while a condition is true?",
+              ["do...while", "for", "while", "if"],
+              2,
+            ],
+            [
+              "Which event fires when a user clicks an element?",
+              ["change", "click", "submit", "hover"],
+              1,
+            ],
+            [
+              "Which built-in object handles dates and times?",
+              ["Calendar", "Date", "Time", "Clock"],
+              1,
+            ],
+          ],
+        },
+      };
+
+      const state = {
+        set: "",
+        q: [],
+        i: 0,
+        score: 0,
+        answered: false,
+        answers: [],
+      };
+      const letters = ["A", "B", "C", "D"];
+
+      const start = document.getElementById("start");
+      const quiz = document.getElementById("quiz");
+      const result = document.getElementById("result");
+
+      const setTitle = document.getElementById("setTitle");
+      const qCount = document.getElementById("qCount");
+      const metaLeft = document.getElementById("metaLeft");
+      const pct = document.getElementById("pct");
+      const fill = document.getElementById("fill");
+      const qNo = document.getElementById("qNo");
+      const qText = document.getElementById("qText");
+      const options = document.getElementById("options");
+      const feedback = document.getElementById("feedback");
+      const nextBtn = document.getElementById("nextBtn");
+      const restartBtn = document.getElementById("restartBtn");
+      const chooseBtn = document.getElementById("chooseBtn");
+
+      const scoreValue = document.getElementById("scoreValue");
+      const scoreTotal = document.getElementById("scoreTotal");
+      const resultTitle = document.getElementById("resultTitle");
+      const resultMsg = document.getElementById("resultMsg");
+      const correctCount = document.getElementById("correctCount");
+      const wrongCount = document.getElementById("wrongCount");
+      const accuracyCount = document.getElementById("accuracyCount");
+      const reviewList = document.getElementById("reviewList");
+      const playAgainBtn = document.getElementById("playAgainBtn");
+      const chooseSetBtn = document.getElementById("chooseSetBtn");
+
+      const show = (id) =>
+        [start, quiz, result].forEach((s) =>
+          s.classList.toggle("active", s.id === id),
+        );
+      const fresh = (k) =>
+        QUIZ[k].q.map(([q, opts, ans]) => [q, [...opts], ans]);
+      const pad2 = (n) => String(n).padStart(2, "0");
+
+      function startQuiz(k) {
+        state.set = k;
+        state.q = fresh(k); // fresh default questions every time
+        state.i = 0;
+        state.score = 0;
+        state.answered = false;
+        state.answers = [];
+        setTitle.textContent = QUIZ[k].title;
+        show("quiz");
+        renderQ();
+      }
+
+      function renderQ() {
+        state.answered = false;
+        const [q, opts, ans] = state.q[state.i];
+        const n = state.i + 1,
+          total = state.q.length,
+          progress = (n / total) * 100;
+
+        qCount.textContent = `Question ${n} of ${total}`;
+        metaLeft.textContent = `Question ${n} of ${total}`;
+        pct.textContent = `${Math.round(progress)}% complete`;
+        fill.style.width = `${progress}%`;
+        qNo.textContent = `Q${pad2(n)}`;
+        qText.textContent = q;
+        feedback.className = "feedback";
+        feedback.textContent = "Choose one answer.";
+        nextBtn.disabled = true;
+        nextBtn.textContent = n === total ? "Finish" : "Next";
+
+        options.innerHTML = opts
+          .map(
+            (o, i) =>
+              `<button class="opt" data-i="${i}" type="button"><b>${letters[i]}</b><span>${o}</span></button>`,
+          )
+          .join("");
+      }
+
+      function choose(i) {
+        if (state.answered) return;
+        state.answered = true; 
+
+        const [q, opts, ans] = state.q[state.i];
+        const ok = i === ans;
+        if (ok) state.score++;
+
+        state.answers.push({ q, opts, pick: i, ans, ok });
+
+        [...options.children].forEach((b, idx) => {
+          b.disabled = true;
+          if (idx === ans) b.classList.add("right");
+          if (idx === i) {
+            b.classList.add("picked");
+            if (!ok) b.classList.add("wrong");
+          }
+        });
+
+        feedback.className = `feedback ${ok ? "good" : "bad"}`;
+        feedback.textContent = ok
+          ? "Correct!"
+          : `Wrong! Correct answer: ${opts[ans]}`;
+        nextBtn.disabled = false;
+      }
+
+      function nextQ() {
+        if (!state.answered) return;
+        if (state.i < state.q.length - 1) {
+          state.i++;
+          renderQ();
+        } else {
+          finishQuiz();
+        }
+      }
+
+      function animateCount(el, target) {
+        let n = 0;
+        const id = setInterval(() => {
+          el.textContent = n;
+          if (n >= target) return clearInterval(id);
+          n++;
+        }, 40);
+      }
+
+      function finishQuiz() {
+        show("result");
+
+        const total = state.q.length;
+        const correct = state.score;
+        const wrong = total - correct;
+        const acc = Math.round((correct / total) * 100);
+
+        scoreTotal.textContent = `/ ${total}`;
+        correctCount.textContent = correct;
+        wrongCount.textContent = wrong;
+        accuracyCount.textContent = `${acc}%`;
+
+        resultTitle.textContent =
+          acc >= 90
+            ? "Outstanding!"
+            : acc >= 70
+              ? "Great Job!"
+              : acc >= 50
+                ? "Good Effort!"
+                : "Keep Practicing!";
+
+        resultMsg.textContent = `You scored ${correct} out of ${total}. Accuracy: ${acc}%.`;
+        animateCount(scoreValue, correct);
+
+        reviewList.innerHTML = state.answers.length
+          ? state.answers
+              .map(
+                (a, idx) => `
+        <div class="review ${a.ok ? "good" : "bad"}">
+          <div class="head">
+            <div class="q">${idx + 1}. ${a.q}</div>
+            <span class="badge ${a.ok ? "good" : "bad"}">${a.ok ? "Correct" : "Wrong"}</span>
+          </div>
+          <div class="answer"><span>Your answer</span><b class="${a.pick === a.ans ? "good" : "bad"}">${a.opts[a.pick]}</b></div>
+          <div class="answer"><span>Correct answer</span><b class="good">${a.opts[a.ans]}</b></div>
+        </div>
+      `,
+              )
+              .join("")
+          : `<div class="empty">No answers to review.</div>`;
+      }
+
+      // Events
+      document.querySelectorAll(".set").forEach((btn) => {
+        btn.addEventListener("click", () => startQuiz(btn.dataset.set));
+      });
+
+      options.addEventListener("click", (e) => {
+        const btn = e.target.closest(".opt");
+        if (btn) choose(+btn.dataset.i);
+      });
+
+      nextBtn.addEventListener("click", nextQ);
+      restartBtn.addEventListener(
+        "click",
+        () => state.set && startQuiz(state.set),
+      );
+      playAgainBtn.addEventListener(
+        "click",
+        () => state.set && startQuiz(state.set),
+      );
+      chooseBtn.addEventListener("click", () => show("start"));
+      chooseSetBtn.addEventListener("click", () => show("start"));
+
+      // Start screen
+      show("start");
+    </script>
+  </body>
+</html>
